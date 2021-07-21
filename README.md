@@ -1,4 +1,4 @@
-# Encolapp
+# Planning Poker
 
 To start your Phoenix server:
 
