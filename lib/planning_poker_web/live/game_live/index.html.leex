@@ -1,0 +1,119 @@
+<div class="columns">
+    <div class="column is-2 ">
+        <aside class="menu">
+            <p class="menu-label">
+                Who is playing
+            </p>
+            <ul class="menu-list">
+                <%= for player <- @players do %>
+                <li>
+                    <div class="columns">
+                        <div class="column is-1">
+                            <figure class="image is-24x24">
+                                <%= img_tag gravatar_url(player), class: "is-rounded" %>
+                            </figure>
+                        </div>
+                        <div class="column is-9">
+                            <span><%= player.name %></span>
+                        </div>
+                    </div>
+                </li>
+                <br/>
+                <% end %>
+                <%= if @in_game do %>
+                <button class="button is-small is-danger is-light" href="#" phx-click="leave">Leave game</button>
+                <% else %>
+                <form phx-submit="join">
+                    <input type="hidden" name="game_name" value="<%= @game_name %>"/>
+                    <button class="button is-small is-primary is-light" type="submit" phx-disable-with="Joining...">I
+                        want to play
+                    </button>
+                </form>
+                <% end %>
+            </ul>
+        </aside>
+    </div>
+    <div class="column is-10">
+        <nav class="breadcrumb" aria-label="breadcrumbs">
+            <ul>
+                <li><a href="/">All Games</a></li>
+                <li class="is-active"><a href="#" aria-current="page">This Game</a></li>
+            </ul>
+        </nav>
+        <section class="hero is-info welcome is-small">
+            <div class="hero-body">
+                <div class="container">
+                    <h1 class="title">
+                        <%= @game_name %>
+                    </h1>
+                    <h2 class="subtitle">
+                        Add and estimate stories
+                    </h2>
+                </div>
+            </div>
+        </section>
+        <div class="columns" style="padding: .75rem;">
+            <div class="column is-6">
+                <div class="card events-card">
+                    <header class="card-header">
+                        <p class="card-header-title">
+                            Stories
+                        </p>
+                    </header>
+                    <div class="card-table">
+                        <div class="content">
+                            <table class="table is-fullwidth is-striped">
+                                <tbody>
+                                <%= for story <- @stories do %>
+                                <tr>
+                                    <td width="5%"><i class="fa fa-id-card"></i></td>
+                                    <td><%= story.name %></td>
+                                    <td class="level-right">
+                                        <%= if @in_game do %>
+                                        <a class="button is-small is-primary" href="#"
+                                           phx-click="estimate"
+                                           phx-value-story="<%= story.name %>">Estimate</a>
+                                        <% end %>
+                                    </td>
+                                </tr>
+                                <% end %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <span>&nbsp;</span>
+                        <%= if Enum.empty?(@stories) do %>
+                        <span class="card-footer-item">Please add a new story</span>
+                        <% end %>
+                    </footer>
+                </div>
+            </div>
+            <div class="column is-6">
+                <div class="card">
+                    <header class="card-header">
+                        <p class="card-header-title">
+                            New Story
+                        </p>
+                    </header>
+                    <div class="card-content">
+                        <div class="content">
+                            <form phx-submit="add_story" id="story-form">
+                                <div class="field has-addons">
+                                    <div class="control is-expanded">
+                                        <input type="text" name="story_name" class="input"
+                                               placeholder="Enter new story" autocomplete="off"/>
+                                    </div>
+                                    <div class="control">
+                                        <button type="submit" phx-disable-with="Adding..." class="button is-link">Add Story
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,52 @@
+<section class="hero is-info welcome is-small">
+    <div class="hero-body">
+        <div class="container">
+            <h1 class="title">
+                Welcome to the Planning Poker
+            </h1>
+        </div>
+    </div>
+</section>
+<div class="columns" style="margin-bottom: 16px; margin-top: 16px;">
+    <div class="column is-6">
+        <div class="card events-card">
+            <header class="card-header">
+                <p class="card-header-title">
+                    Please join our virtual casino here
+                </p>
+            </header>
+            <div class="card-content">
+                <div class="content">
+                    <%= f = form_for @player, Routes.user_path(@socket, :create),
+      id: "player-form",
+      phx_change: "validate",
+      phx_submit: "save",
+      phx_trigger_action: @trigger_submit %>
+
+                    <div class="field">
+                        <%= label f, :name, class: 'label' %>
+                        <div class="control">
+                            <%= text_input f, :name, class: 'input'%>
+                        </div>
+                        <br/>
+                        <p class="help is-danger">
+                            <%= error_tag f, :name %>
+                        </p>
+                    </div>
+                    <div class="field">
+                        <%= label f, :email, class: 'label' %>
+                        <div class="control">
+                            <%= email_input f, :email, class: 'input'%>
+                        </div>
+                        <br/>
+                        <p class="help is-danger">
+                            <%= error_tag f, :email %>
+                        </p>
+                    </div>
+                    <%= submit "Join", phx_disable_with: "Joining...", class: 'button is-link' %>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,124 @@
+<div class="columns">
+    <div class="column is-2 ">
+        <aside class="menu">
+            <p class="menu-label">
+                Who is playing
+            </p>
+            <ul class="menu-list">
+                <%= for player <- @players do %>
+                <li>
+                    <div class="columns">
+                        <div class="column is-1">
+                            <figure class="image is-24x24">
+                                <%= img_tag gravatar_url(player), class: "is-rounded" %>
+                            </figure>
+                        </div>
+                        <div class="column is-9">
+                            <span><%= player.name %></span>
+                        </div>
+                    </div>
+                </li>
+                <br/>
+                <% end %>
+            </ul>
+        </aside>
+    </div>
+    <div class="column is-10">
+        <nav class="breadcrumb" aria-label="breadcrumbs">
+            <ul>
+                <li><a href="/">All Games</a></li>
+                <li><%= live_redirect @game_name, to: Routes.live_path(@socket, PlanningPokerWeb.GameLive.Index, @game_name) %></li>
+                <li class="is-active"><a href="#" aria-current="page">This Story</a></li>
+            </ul>
+        </nav>
+        <section class="hero is-info welcome is-small">
+            <div class="hero-body">
+                <div class="container">
+                    <h1 class="title">
+                        <%= @story_name %>
+                    </h1>
+                    <h2 class="subtitle">
+                        Estimate the story
+                    </h2>
+                </div>
+            </div>
+        </section>
+        <section class="info-tiles">
+            <div class="tile is-ancestor has-text-centered">
+                <%= for card <- @deck do %>
+                <a href="#"
+                   phx-click="choose-estimate"
+                   phx-value-card="<%= card %>">
+                    <div class="tile is-parent">
+                        <article class="tile box is-child notification <%=(if @my_estimate.card == card, do: "is-danger", else: "is-warning") %>">
+                            <p class="title"><%= card %></p>
+                            <p class="subtitle">
+                            </p>
+                        </article>
+                    </div>
+                </a>
+                <% end %>
+            </div>
+        </section>
+        <div class="columns">
+            <div class="column is-6">
+                <div class="card events-card">
+                    <header class="card-header">
+                        <p class="card-header-title">
+                            Estimates
+                        </p>
+                    </header>
+                    <div class="card-table">
+                        <div class="content">
+                            <table class="table is-fullwidth is-striped">
+                                <tbody>
+                                <%= for estimate <- @estimates do %>
+                                <tr>
+                                    <td width="5%"><i class="fa fa-weight-hanging"></i></td>
+                                    <td><%= estimate.player.name %></td>
+                                    <td><%= player_estimate(@estimates_completed, estimate.card) %></td>
+                                    <td class="level-right">
+                                        <%= if @estimates_completed do %>
+                                        <a class="button is-small is-primary"
+                                           href="#" phx-click="finalize-estimation"
+                                           phx-value-card="<%= estimate.card %>">Choose</a>
+                                        <% end %>
+                                    </td>
+                                </tr>
+                                <% end %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <span>&nbsp;</span>
+                        <%= unless @my_estimate.filled do %>
+                            <span class="card-footer-item">Please choose your estimate</span>
+                        <% end%>
+                    </footer>
+                </div>
+            </div>
+            <div class="column is-6">
+                <div class="card">
+                    <header class="card-header">
+                        <p class="card-header-title">
+                            Summary
+                        </p>
+                    </header>
+                    <div class="card-content">
+                        <div class="content">
+                            <span>Your estimate: <%= @my_estimate.card %></span><br/>
+                            <span>All match?: No</span><br/>
+                            <span>Average: <%= @my_estimate.card %></span><br/>
+                            <p class="level-right">
+                                <%= if @estimates_completed do %>
+                                <a class="button is-small is-danger" phx-click="restart" href="#">Restart</a>
+                                <% end %>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

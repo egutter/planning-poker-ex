@@ -1,0 +1,105 @@
+<div class="columns">
+    <div class="column is-2 ">
+        <aside class="menu">
+            <p class="menu-label">
+                Players
+            </p>
+            <ul class="menu-list">
+                <%= for player <- @players do %>
+                <li>
+                    <div class="columns">
+                        <div class="column is-1">
+                            <figure class="image is-24x24">
+                                <%= img_tag gravatar_url(player), class: "is-rounded" %>
+                            </figure>
+                        </div>
+                        <div class="column is-9">
+                            <span><%= player.name %></span>
+                        </div>
+                    </div>
+                </li>
+                <% end %>
+            </ul>
+        </aside>
+    </div>
+    <div class="column is-10">
+        <nav class="breadcrumb" aria-label="breadcrumbs">
+            <ul>
+                <li class="is-active"><a href="#" aria-current="page">Games</a></li>
+            </ul>
+        </nav>
+        <section class="hero is-info welcome is-small">
+            <div class="hero-body">
+                <div class="container">
+                    <h1 class="title">
+                        Hello, <%= @current_user.name %>
+                    </h1>
+                    <h2 class="subtitle">
+                        Have fun and enjoy poker!
+                    </h2>
+                </div>
+            </div>
+        </section>
+        <div class="columns" style="padding: .75rem;">
+            <div class="column is-6">
+                <div class="card events-card">
+                    <header class="card-header">
+                        <p class="card-header-title">
+                            Games
+                        </p>
+                    </header>
+                    <div class="card-table">
+                        <div class="content">
+                            <table class="table is-fullwidth is-striped">
+                                <tbody>
+                                <%= for game <- @games do %>
+                                <tr>
+                                    <td width="5%"><i class="fa fa-dice"></i></td>
+                                    <td><%= live_redirect game.name, to: Routes.live_path(@socket, PlanningPokerWeb.GameLive.Index, game.name) %></td>
+                                    <td class="level-right">
+                                        <a class="button is-small is-primary" data-phx-link="redirect"
+                                           data-phx-link-state="push"
+                                           href="<%=Routes.live_path(@socket, PlanningPokerWeb.GameLive.Index, game.name) %>">Join</a>
+                                    </td>
+                                </tr>
+                                <% end %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <span>&nbsp;</span>
+                        <%= if Enum.empty?(@games) do %>
+                            <span class="card-footer-item">Please add a new game</span>
+                        <% end %>
+                    </footer>
+                </div>
+            </div>
+            <div class="column is-6">
+                <div class="card">
+                    <header class="card-header">
+                        <p class="card-header-title">
+                            New Game
+                        </p>
+                    </header>
+                    <div class="card-content">
+                        <div class="content">
+                            <form phx-submit="open_game" id="game-form">
+                                <div class="field has-addons">
+                                    <div class="control is-expanded">
+                                        <input type="text" name="game_name" class="input"
+                                               placeholder="Enter game name" autocomplete="off"/>
+                                    </div>
+                                    <div class="control">
+                                        <button type="submit" phx-disable-with="Creating..." class="button is-link">Add Game
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <%= csrf_meta_tag() %>
+        <%= live_title_tag assigns[:page_title] || "Planning Poker" %>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+        <link phx-track-static rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
+        <script defer src="https://use.fontawesome.com/releases/v5.15.0/js/all.js"></script>
+        <script defer phx-track-static type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
+    </head>
+    <body>
+        <nav class="navbar is-white">
+            <div class="container">
+                <div class="navbar-brand">
+                    <a href="/" style="color: inherit;">
+                        <img src="<%= Routes.static_path(@conn, "/images/poker.png") %>" width="80"/>
+                    </a>
+                </div>
+                <div id="navMenu" class="navbar-menu">
+                    <div class="navbar-start">
+                        <a class="navbar-item" href="/">
+                            Home
+                        </a>
+                        <%= if function_exported?(Routes, :live_dashboard_path, 2) do %>
+                        <%= link "LiveDashboard", to: Routes.live_dashboard_path(@conn, :home), class: "navbar-item" %>
+                            <% end %>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="container">
+            <%= @inner_content %>
+        </div>
+    </body>
+</html>
