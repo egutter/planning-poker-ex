@@ -37,6 +37,10 @@ defmodule PlanningPoker.PlanningSession.Story do
     count(story.estimates) == count(players)
   end
 
+  def estimated?(story) do
+    story.final_estimate != ""
+  end
+
   defp update_estimate(story, new_estimate) do
     player = new_estimate.player
 

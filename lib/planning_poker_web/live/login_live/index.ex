@@ -37,20 +37,4 @@ defmodule PlanningPokerWeb.LoginLive.Index do
         {:noreply, assign(socket, changeset: changeset)}
     end
   end
-
-  @impl true
-  def handle_event("save2", %{"player" => player_params}, socket) do
-    case Player.changeset(%Player{}, player_params) do
-      %Ecto.Changeset{valid?: true} = changeset ->
-        Casino.join_player(changeset.changes)
-
-        {:noreply,
-         socket
-         |> put_flash(:info, "Welcome to our virtual casino")
-         |> assign(trigger_submit: true)}
-
-      %Ecto.Changeset{} = changeset ->
-        {:noreply, assign(socket, changeset: changeset)}
-    end
-  end
 end

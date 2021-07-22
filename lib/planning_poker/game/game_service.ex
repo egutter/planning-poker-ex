@@ -34,13 +34,13 @@ defmodule PlanningPoker.Game.GameService do
     GameRepo.save(id, game)
   end
 
-  def close_estimate(id, story, card) do
-    game = GameRepo.find(id) |> Game.close_estimate(story, card)
+  def close_estimate(id, story_name, card) do
+    game = GameRepo.find(id) |> Game.close_estimate(story_name, card)
     GameRepo.save(id, game)
   end
 
   def find_story(id, story_name) do
-    game = GameRepo.find(id) |> Game.find_story(story_name)
+    GameRepo.find(id) |> Game.find_story(story_name)
   end
 
   def restart(id, story_name) do

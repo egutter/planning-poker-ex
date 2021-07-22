@@ -24,19 +24,21 @@ defmodule PlanningPoker.PlanningSession.Player do
   def from_map(%{"name" => name, "email" => email}), do: %Player{name: name, email: email}
 
   def gravatar_url(player) do
-    mail_hash =
-      player.email
-      |> String.trim()
-      |> String.downcase()
-      |> :erlang.md5()
-      |> Base.encode16(case: :lower)
+    player.email
+    |> String.trim()
+    |> String.downcase()
+    |> :erlang.md5()
+    |> Base.encode16(case: :lower)
   end
+
+  @doc false
+  def changeset(player, attrs \\ %{})
 
   @doc false
   def changeset(player, nil), do: player
 
   @doc false
-  def changeset(player, attrs \\ %{}) do
+  def changeset(player, attrs) do
     player
     |> cast(attrs, [:name, :email])
     |> validate_required([:name, :email])

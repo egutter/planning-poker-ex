@@ -4,8 +4,8 @@ defmodule PlanningPokerWeb.GameLive.Index do
   import Enum, only: [member?: 2]
 
   alias Phoenix.PubSub
-  alias PlanningPoker.Game.Game
   alias PlanningPoker.Game.GameService
+  alias PlanningPoker.Game.Game
   alias PlanningPoker.Casino.CasinoService
 
   @topic "game_topic"
@@ -28,6 +28,8 @@ defmodule PlanningPokerWeb.GameLive.Index do
        players: game.players,
        game_name: game.name,
        stories: game.stories,
+       stories_to_estimate: Game.stories_to_estimate(game),
+       estimated_stories: Game.estimated_stories(game),
        in_game: member?(game.players, player)
      )}
   end
@@ -57,7 +59,7 @@ defmodule PlanningPokerWeb.GameLive.Index do
 
     PubSub.broadcast_from(PlanningPoker.PubSub, self(), @topic, {:add_story, game_name})
 
-    {:noreply, assign(socket, stories: game.stories)}
+    {:noreply, assign(socket, stories_to_estimate: Game.stories_to_estimate(game))}
   end
 
   @impl true
@@ -99,7 +101,7 @@ defmodule PlanningPokerWeb.GameLive.Index do
 
   @impl true
   def handle_info({:add_story, game_name}, socket) do
-    handle_notification(socket, game_name, fn game -> %{stories: game.stories} end)
+    handle_notification(socket, game_name, fn game -> %{stories_to_estimate: Game.stories_to_estimate(game)} end)
   end
 
   @impl true

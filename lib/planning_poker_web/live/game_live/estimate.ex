@@ -68,17 +68,14 @@ defmodule PlanningPokerWeb.GameLive.Estimate do
   end
 
   @impl true
-  def handle_event("finalize-estimation", %{card: card}, socket) do
+
+  def handle_event("finalize-estimation", %{"card" => card}, socket) do
     game_name = socket.assigns.game_name
     story_name = socket.assigns.story_name
 
-    game_service =
-      game_name
-      |> CasinoService.find_game()
-
-    story = game_service |> Game.get() |> Game.find_story(story_name)
-
-    game_service |> Game.story_final_estimate(story, card)
+    game_name
+    |> CasinoService.find_game()
+    |> GameService.close_estimate(story_name, card)
 
     {:noreply,
      redirect(socket,
@@ -129,7 +126,7 @@ defmodule PlanningPokerWeb.GameLive.Estimate do
 
   @impl true
   def handle_info({:estimate_restart, %{game_name: game_name, story_name: story_name}}, socket) do
-    handle_notification(socket, game_name, story_name, fn game_id, story ->
+    handle_notification(socket, game_name, story_name, fn game_id, _story ->
       story =
         game_id
         |> GameService.restart(story_name)

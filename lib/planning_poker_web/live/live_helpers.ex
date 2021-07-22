@@ -9,7 +9,7 @@ defmodule PlanningPokerWeb.LiveHelpers do
       {:ok, player} ->
         assign_new(socket, :current_user, fn -> player end)
 
-      {:invalid, player} ->
+      {:invalid, _player} ->
         socket
         |> put_flash(:error, "You must log in to access this page.")
         |> redirect(to: Routes.live_path(socket, PlanningPokerWeb.LoginLive.Index))
@@ -18,12 +18,12 @@ defmodule PlanningPokerWeb.LiveHelpers do
 
   def check_user_is_not_signed_in(session, socket) do
     case valid_and_joined?(session) do
-      {:ok, player} ->
+      {:ok, _player} ->
         socket
         |> put_flash(:error, "You are already logged")
         |> redirect(to: Routes.live_path(socket, PlanningPokerWeb.CasinoLive.Index))
 
-      {:invalid, player} ->
+      {:invalid, _player} ->
         socket
     end
   end

@@ -57,14 +57,14 @@
                 <div class="card events-card">
                     <header class="card-header">
                         <p class="card-header-title">
-                            Stories
+                            Stories to estimate
                         </p>
                     </header>
                     <div class="card-table">
                         <div class="content">
                             <table class="table is-fullwidth is-striped">
                                 <tbody>
-                                <%= for story <- @stories do %>
+                                <%= for story <- @stories_to_estimate do %>
                                 <tr>
                                     <td width="5%"><i class="fa fa-id-card"></i></td>
                                     <td><%= story.name %></td>
@@ -83,8 +83,43 @@
                     </div>
                     <footer class="card-footer">
                         <span>&nbsp;</span>
-                        <%= if Enum.empty?(@stories) do %>
+                        <%= if Enum.empty?(@stories_to_estimate) do %>
                         <span class="card-footer-item">Please add a new story</span>
+                        <% end %>
+                    </footer>
+                </div>
+                <div class="card events-card">
+                    <header class="card-header">
+                        <p class="card-header-title">
+                            Estimated stories
+                        </p>
+                    </header>
+                    <div class="card-table">
+                        <div class="content">
+                            <table class="table is-fullwidth is-striped">
+                                <tbody>
+                                <%= for story <- @estimated_stories do %>
+                                <tr>
+                                    <td width="5%"><i class="fa fa-id-card"></i></td>
+                                    <td><%= story.name %></td>
+                                    <td><%= story.final_estimate %></td>
+                                    <td class="level-right">
+                                        <%= if @in_game do %>
+                                        <a class="button is-small is-secondary" href="#"
+                                           phx-click="estimate"
+                                           phx-value-story="<%= story.name %>">Re-estimate</a>
+                                        <% end %>
+                                    </td>
+                                </tr>
+                                <% end %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <span>&nbsp;</span>
+                        <%= if Enum.empty?(@estimated_stories) do %>
+                        <span class="card-footer-item">Please estimate a story</span>
                         <% end %>
                     </footer>
                 </div>

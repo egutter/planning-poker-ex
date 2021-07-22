@@ -29,9 +29,10 @@ defmodule PlanningPoker.Game.Game do
     %{game | stories: update_story(game, story)}
   end
 
-  def close_estimate(game, story, card) do
+  def close_estimate(game, story_name, card) do
     story =
-      story
+      game
+      |> find_story(story_name)
       |> Story.close_estimate(card)
 
     %{game | stories: update_story(game, story)}
@@ -49,6 +50,14 @@ defmodule PlanningPoker.Game.Game do
   def find_story(game, story_name) do
     game.stories
     |> Enum.find(fn story -> Story.has_name?(story, story_name) end)
+  end
+
+  def stories_to_estimate(game) do
+    Enum.reject(game.stories, &(Story.estimated?(&1)))
+  end
+
+  def estimated_stories(game) do
+    Enum.filter(game.stories, &(Story.estimated?(&1)))
   end
 
   defp update_story(game, story) do
