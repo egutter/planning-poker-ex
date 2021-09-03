@@ -11,32 +11,27 @@ defmodule PlanningPokerWeb.GameLive.Estimate do
   @topic "estimate_topic"
 
   @impl true
-  def mount(params, session, socket) do
+  def mount(%{"story_name" => story_name, "game_name" => game_name}, session, socket) do
     socket = check_user_is_signed_in(session, socket)
 
     PubSub.subscribe(PlanningPoker.PubSub, @topic)
 
-    player = socket.assigns.current_user
-
-    story_name = params["story_name"]
-
     game =
-      params["game_name"]
+      game_name
       |> CasinoService.find_game()
       |> GameService.find()
 
     story = Game.find_story(game, story_name)
 
     {:ok,
-     assign(socket,
-       players: game.players,
-       game_name: game.name,
-       story_name: story_name,
-       deck: Fibonacci.values(),
-       estimates: story.estimates,
-       my_estimate: Story.find_estimate_by_player(story, player),
-       estimates_completed: Story.estimated_by_all_players?(story, game.players)
-     )}
+     socket
+     |> assign_game_players(game)
+     |> assign_game_name(game)
+     |> assign_story_name(story_name)
+     |> assign_deck_values()
+     |> assign_story_estimates(story)
+     |> assign_my_estimate(story)
+     |> assign_estimates_completed_and_notify_client(story, game)}
   end
 
   @impl true
@@ -60,11 +55,10 @@ defmodule PlanningPokerWeb.GameLive.Estimate do
     )
 
     {:noreply,
-     assign(socket,
-       estimates: story.estimates,
-       my_estimate: Story.find_estimate_by_player(story, player),
-       estimates_completed: Story.estimated_by_all_players?(story, game.players)
-     )}
+     socket
+     |> assign_story_estimates(story)
+     |> assign_my_estimate(story)
+     |> assign_estimates_completed_and_notify_client(story, game)}
   end
 
   @impl true
@@ -76,6 +70,13 @@ defmodule PlanningPokerWeb.GameLive.Estimate do
     game_name
     |> CasinoService.find_game()
     |> GameService.close_estimate(story_name, card)
+
+    PubSub.broadcast_from(
+      PlanningPoker.PubSub,
+      self(),
+      @topic,
+      {:estimatation_finalized, %{game_name: game_name, story_name: story_name}}
+    )
 
     {:noreply,
      redirect(socket,
@@ -103,11 +104,10 @@ defmodule PlanningPokerWeb.GameLive.Estimate do
     )
 
     {:noreply,
-     assign(socket,
-       estimates: story.estimates,
-       my_estimate: %Estimate{},
-       estimates_completed: false
-     )}
+     socket
+     |> assign_story_estimates(story)
+     |> assign_clear_my_estimate()
+     |> assign_clear_estimates_completed()}
   end
 
   @impl true
@@ -116,11 +116,23 @@ defmodule PlanningPokerWeb.GameLive.Estimate do
       player = socket.assigns.current_user
       game = GameService.find(game_id)
 
-      %{
-        estimates: story.estimates,
-        my_estimate: Story.find_estimate_by_player(story, player),
-        estimates_completed: Story.estimated_by_all_players?(story, game.players)
-      }
+      {:noreply,
+       socket
+       |> assign(estimates: story.estimates)
+       |> assign(my_estimate: Story.find_estimate_by_player(story, player))
+       |> assign_estimates_completed_and_notify_client(story, game)}
+    end)
+  end
+
+  def handle_info(
+        {:estimatation_finalized, %{game_name: game_name, story_name: story_name}},
+        socket
+      ) do
+    handle_notification(socket, game_name, story_name, fn _game_id, _story ->
+      {:noreply,
+       redirect(socket,
+         to: Routes.live_path(socket, PlanningPokerWeb.GameLive.Index, game_name)
+       )}
     end)
   end
 
@@ -132,7 +144,11 @@ defmodule PlanningPokerWeb.GameLive.Estimate do
         |> GameService.restart(story_name)
         |> Game.find_story(story_name)
 
-      %{estimates: story.estimates, my_estimate: %Estimate{}, estimates_completed: false}
+      {:noreply,
+       socket
+       |> assign(estimates: story.estimates)
+       |> assign(my_estimate: %Estimate{})
+       |> assign(estimates_completed: false)}
     end)
   end
 
@@ -152,7 +168,7 @@ defmodule PlanningPokerWeb.GameLive.Estimate do
           |> GameService.find()
           |> Game.find_story(story_name)
 
-        {:noreply, assign(socket, fun.(game_id, story))}
+        fun.(game_id, story)
 
       _ ->
         {:noreply, socket}
@@ -192,5 +208,45 @@ defmodule PlanningPokerWeb.GameLive.Estimate do
       _ ->
         handle_fun.({:other_game})
     end
+  end
+
+  defp assign_game_players(socket, game) do
+    assign(socket, players: game.players)
+  end
+
+  defp assign_game_name(socket, game) do
+    assign(socket, game_name: game.name)
+  end
+
+  defp assign_story_name(socket, story_name) do
+    assign(socket, story_name: story_name)
+  end
+
+  defp assign_deck_values(socket) do
+    assign(socket, deck: Fibonacci.values())
+  end
+
+  defp assign_story_estimates(socket, story) do
+    assign(socket, estimates: story.estimates)
+  end
+
+  defp assign_my_estimate(%{assigns: %{current_user: player}} = socket, story) do
+    assign(socket, my_estimate: Story.find_estimate_by_player(story, player))
+  end
+
+  defp assign_estimates_completed_and_notify_client(socket, story, game) do
+    estimates_completed = Story.estimated_by_all_players?(story, game.players)
+
+    socket
+    |> assign(estimates_completed: estimates_completed)
+    |> push_event("estimates_completed", %{estimates_completed: estimates_completed})
+  end
+
+  defp assign_clear_my_estimate(socket) do
+    assign(socket, my_estimate: %Estimate{})
+  end
+
+  defp assign_clear_estimates_completed(socket) do
+    assign(socket, estimates_completed: false)
   end
 end

@@ -90,3 +90,64 @@
 .alert:empty {
   display: none;
 }
+
+.card-container {
+  perspective: 1000px;
+}
+
+.poker-card {
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.02, 1.02);
+  }
+}
+
+
+/* ==========================================
+reference --> https://codepen.io/amazingrando/pen/yjbAh
+========================================== */
+
+.flip-wrapper {
+  position: relative;
+  
+  // compensate for the space of the last item in a column
+  &.bottom{
+    margin-bottom:-1.4em;
+  }
+  .flip-tile {
+
+    // Animation elements
+    display: block;
+    perspective: 600px;
+    position: relative;
+    transition: all 0.1s;
+
+    .flip-tile-front,
+    .flip-tile-back {
+      // Makes a card invisible from behind.
+      backface-visibility: hidden;
+      transform-style: preserve-3d;
+      transition: all 0.4s ease-in-out;
+            
+    }
+    .flip-tile-front {
+      // Default rotation values
+      transform: rotateX(0deg) rotateY(0deg);
+    }
+
+    .flip-tile-back {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: 100%;
+
+      visibility: hidden;
+      // Default rotation value
+      transform: rotateY(-180deg);
+
+      // Do not want to exceed the height of the front card
+      overflow: hidden;
+    }
+  }
+}

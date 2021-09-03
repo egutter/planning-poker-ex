@@ -44,22 +44,48 @@
             </div>
         </section>
         <section class="info-tiles">
-            <div class="tile is-ancestor has-text-centered">
+            <div class="tile is-ancestor" id="poker-cards" phx-hook="ChooseEstimate">
                 <%= for card <- @deck do %>
-                <a href="#"
-                   phx-click="choose-estimate"
-                   phx-value-card="<%= card %>">
-                    <div class="tile is-parent">
-                        <article class="tile box is-child notification <%=(if @my_estimate.card == card, do: "is-danger", else: "is-warning") %>">
-                            <p class="title"><%= card %></p>
-                            <p class="subtitle">
-                            </p>
+                    <div id="card-<%= card %>" class="poker-card tile is-parent" style="max-height: 217px;max-width: 163px;" data-card="<%= card %>">
+                        <article class="tile is-child">
+                            <figure class="image is-3by4">
+                                <img src="<%= Routes.static_path(@socket, "/images/card_#{card}.png") %>" alt="Placeholder card-<%=card%>.png">
+                            </figure>
                         </article>
                     </div>
-                </a>
                 <% end %>
             </div>
         </section>
+        <div class="box has-text-centered pt-6 pb-6" id="drop-poker-cards">
+            <%= if Enum.empty?(@estimates) do %>
+                <span class="card-footer-item">Please drop your card here.</span>
+            <% end %>
+            <div class="tile is-ancestor card-container">
+                <%= for estimate <- @estimates do %>
+                    <div class="tile is-4 is-vertical is-parent" style="max-height: 217px;max-width: 163px;">
+                        <div class="flip-wrapper">
+                            <label class="tile is-child flip-tile" for="toggle-1">
+                                <figure class="poker-card flip-tile-front box image is-3by4">
+                                    <img src="<%= Routes.static_path(@socket, "/images/card_back.png") %>" alt="Placeholder card_back.png">
+                                </figure>
+                                <figure class="poker-card flip-tile-back box image is-3by4">
+                                    <img src="<%= Routes.static_path(@socket, "/images/card_#{estimate.card}.png") %>" alt="Placeholder card_<%=estimate.card%>.png">
+                                    <%= if @estimates_completed do %>
+                                        <a class="button is-small is-primary"
+                                           href="#" phx-click="finalize-estimation"
+                                           phx-value-card="<%= estimate.card %>">Choose</a>
+                                    <% end %>
+                                </figure>
+                                <p class="subtitle">
+                                    <%= estimate.player.name %>
+                                </p>
+                            </label>
+                        </div>
+                    </div>
+                <% end %>
+            </div>
+        </div>
+
         <div class="columns">
             <div class="column is-6">
                 <div class="card events-card">

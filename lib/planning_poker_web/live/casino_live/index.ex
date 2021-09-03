@@ -15,7 +15,10 @@ defmodule PlanningPokerWeb.CasinoLive.Index do
 
     casino = CasinoService.find()
 
-    {:ok, assign(socket, games: Casino.all_games(casino), players: casino.players)}
+    {:ok,
+     socket
+     |> assign_all_games(casino)
+     |> assign_all_players(casino)}
   end
 
   @impl true
@@ -24,20 +27,36 @@ defmodule PlanningPokerWeb.CasinoLive.Index do
 
     PubSub.broadcast_from(PlanningPoker.PubSub, self(), @topic, {:new_game})
 
-    {:noreply, assign(socket, games: Casino.all_games(casino))}
+    {:noreply,
+     socket
+     |> assign_all_games(casino)}
   end
 
   @impl true
   def handle_info({:new_player}, socket) do
     casino = CasinoService.find()
-    {:noreply, assign(socket, players: casino.players)}
+
+    {:noreply,
+     socket
+     |> assign_all_players(casino)}
   end
 
   @impl true
   def handle_info({:new_game}, socket) do
     casino = CasinoService.find()
-    {:noreply, assign(socket, games: Casino.all_games(casino))}
+
+    {:noreply,
+     socket
+     |> assign_all_games(casino)}
   end
 
   def topic(), do: @topic
+
+  defp assign_all_games(socket, casino) do
+    assign(socket, games: Casino.all_games(casino))
+  end
+
+  defp assign_all_players(socket, casino) do
+    assign(socket, players: casino.players)
+  end
 end

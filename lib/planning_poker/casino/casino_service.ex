@@ -22,10 +22,10 @@ defmodule PlanningPoker.Casino.CasinoService do
     case Player.changeset(player) do
       %Ecto.Changeset{valid?: true} ->
         casino = CasinoRepo.find() |> Casino.add_player(player)
-        CasinoRepo.save(casino)
+        {:ok, CasinoRepo.save(casino)}
 
       changeset ->
-        changeset
+        {:error, changeset}
     end
   end
 

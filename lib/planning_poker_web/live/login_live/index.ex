@@ -3,7 +3,6 @@ defmodule PlanningPokerWeb.LoginLive.Index do
 
   alias Phoenix.PubSub
   alias PlanningPoker.Casino.CasinoService
-  alias PlanningPoker.Casino.Casino
   alias PlanningPoker.PlanningSession.Player
 
   @topic PlanningPokerWeb.CasinoLive.Index.topic()
@@ -29,11 +28,11 @@ defmodule PlanningPokerWeb.LoginLive.Index do
     player = Player.from_map(player_params)
 
     case CasinoService.join_player(player) do
-      %Casino{} ->
+      {:ok, _casino} ->
         PubSub.broadcast_from(PlanningPoker.PubSub, self(), @topic, {:new_player})
         {:noreply, assign(socket, trigger_submit: true)}
 
-      %Ecto.Changeset{valid?: false} = changeset ->
+      {:error, changeset} ->
         {:noreply, assign(socket, changeset: changeset)}
     end
   end
