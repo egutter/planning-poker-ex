@@ -13,20 +13,19 @@ import "../css/app.scss"
 //     import socket from "./socket"
 //
 import "phoenix_html"
-import {Socket} from "phoenix"
+import { Socket } from "phoenix"
 import NProgress from "nprogress"
-import {LiveSocket} from "phoenix_live_view"
+import { LiveSocket } from "phoenix_live_view"
 
-let drake = dragula([document.querySelector('#poker-cards'), document.querySelector('#drop-poker-cards')]);
+let drake = dragula([document.querySelector('#poker-cards'),
+                     document.querySelector('#drop-poker-cards')]);
 
 let Hooks = {}
 Hooks.ChooseEstimate = {
-  mounted(){
-    console.log('element mounted ');
+  mounted() {
     const hook = this;
 
-    this.handleEvent("estimates_completed", ({estimates_completed}) => {
-      console.log("handle event estimates completed "+estimates_completed);
+    this.handleEvent("estimates_completed", ({ estimates_completed }) => {
       if (estimates_completed) {
         this.flipCards();
       }
@@ -35,27 +34,27 @@ Hooks.ChooseEstimate = {
     drake.on('drop', function (el, target) {
       if (target.id == 'drop-poker-cards') {
         console.log('pushing new estimate' + el.dataset.card);
-        hook.pushEvent("choose-estimate", {card: el.dataset.card}, (reply, ref) => console.log(reply));
+        hook.pushEvent("choose-estimate", { card: el.dataset.card }, (reply, ref) => console.log(reply));
       }
-    });  
+    });
 
   },
-  flipCards(){
-    console.log("flip");
+
+  flipCards() {
     var backElements = document.querySelectorAll('.flip-tile-back');
     backElements.forEach((element) => {
-        element.style.transform = "rotateY(0deg) rotateX(0deg)";
-        element.style.visibility = "visible";
+      element.style.transform = "rotateY(0deg) rotateX(0deg)";
+      element.style.visibility = "visible";
     });
     var frontElements = document.querySelectorAll('.flip-tile-front');
     frontElements.forEach((element) => {
-        element.style.transform = 'rotateY(180deg)';
+      element.style.transform = 'rotateY(180deg)';
     });
   }
 }
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
-let liveSocket = new LiveSocket("/live", Socket, {hooks: Hooks, params: {_csrf_token: csrfToken}})
+let liveSocket = new LiveSocket("/live", Socket, { hooks: Hooks, params: { _csrf_token: csrfToken } })
 
 // Show progress bar on live navigation and form submits
 window.addEventListener("phx:page-loading-start", info => NProgress.start())

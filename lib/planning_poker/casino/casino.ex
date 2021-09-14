@@ -18,6 +18,15 @@ defmodule PlanningPoker.Casino.Casino do
     %{casino | games: games}
   end
 
+  def remove_game(casino, game_name) do
+    casino
+    |> find_game(game_name)
+    |> GameService.delete()
+
+    games = Map.delete(casino.games, game_name)
+    %{casino | games: games}
+  end
+
   def find_game(casino, game_name) do
     casino.games[game_name]
   end

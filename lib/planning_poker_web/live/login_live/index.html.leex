@@ -17,11 +17,10 @@
             </header>
             <div class="card-content">
                 <div class="content">
-                    <%= f = form_for @player, Routes.user_path(@socket, :create),
-      id: "player-form",
-      phx_change: "validate",
-      phx_submit: "save",
-      phx_trigger_action: @trigger_submit %>
+                    <%= f = form_for @player, Routes.user_path(@socket, :create), id: "player-form",
+                        phx_change: "validate",
+                        phx_submit: "save",
+                        phx_trigger_action: @trigger_submit %>
 
                     <div class="field">
                         <%= label f, :name, class: 'label' %>

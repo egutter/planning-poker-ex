@@ -5,8 +5,13 @@ defmodule PlanningPoker.Game.GameRepo do
     start_link(game)
   end
 
+  @spec find(atom | pid | {atom, any} | {:via, atom, any}) :: any
   def find(id) do
     Agent.get(id, & &1)
+  end
+
+  def delete(id) do
+    Agent.stop(id)
   end
 
   def save(id, new_game) do

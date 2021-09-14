@@ -35,11 +35,11 @@ defmodule PlanningPokerWeb.GameLive.Estimate do
   end
 
   @impl true
-  def handle_event("choose-estimate", %{"card" => card}, socket) do
-    game_name = socket.assigns.game_name
-    story_name = socket.assigns.story_name
-    player = socket.assigns.current_user
-
+  def handle_event(
+        "choose-estimate",
+        %{"card" => card},
+        %{assigns: %{game_name: game_name, story_name: story_name, current_user: player}} = socket
+      ) do
     game =
       game_name
       |> CasinoService.find_game()

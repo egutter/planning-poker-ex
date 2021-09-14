@@ -25,11 +25,27 @@ defmodule PlanningPokerWeb.CasinoLive.Index do
   def handle_event("open_game", %{"game_name" => game_name}, socket) do
     casino = CasinoService.start_game(game_name)
 
-    PubSub.broadcast_from(PlanningPoker.PubSub, self(), @topic, {:new_game})
+    PubSub.broadcast_from(PlanningPoker.PubSub, self(), @topic, {:games_changed})
 
     {:noreply,
      socket
      |> assign_all_games(casino)}
+  end
+
+  @impl true
+  def handle_params(%{"delete" => game_name}, _uri, socket) do
+    casino = CasinoService.remove_game(game_name)
+
+    PubSub.broadcast_from(PlanningPoker.PubSub, self(), @topic, {:games_changed})
+
+    {:noreply,
+      socket
+      |> assign_all_games(casino)}
+  end
+
+  @impl true
+  def handle_params(_params, _uri, socket) do
+    {:noreply, socket}
   end
 
   @impl true
@@ -42,7 +58,7 @@ defmodule PlanningPokerWeb.CasinoLive.Index do
   end
 
   @impl true
-  def handle_info({:new_game}, socket) do
+  def handle_info({:games_changed}, socket) do
     casino = CasinoService.find()
 
     {:noreply,

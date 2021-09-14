@@ -57,9 +57,13 @@
                                     <td width="5%"><i class="fa fa-dice"></i></td>
                                     <td><%= live_redirect game.name, to: Routes.live_path(@socket, PlanningPokerWeb.GameLive.Index, game.name) %></td>
                                     <td class="level-right">
-                                        <a class="button is-small is-primary" data-phx-link="redirect"
-                                           data-phx-link-state="push"
-                                           href="<%=Routes.live_path(@socket, PlanningPokerWeb.GameLive.Index, game.name) %>">Join</a>
+                                        <%= live_redirect class: "button is-small is-primary", to: Routes.live_path(@socket, PlanningPokerWeb.GameLive.Index, game.name) do %>
+                                            Join
+                                        <% end %>
+                                        &nbsp;
+                                        <%= live_patch class: "button is-small is-danger", to: Routes.live_path(@socket, PlanningPokerWeb.CasinoLive.Index, %{delete: game.name}), replace: false do %>
+                                            <i class="fa fa-trash-alt"></i>
+                                        <% end %>
                                     </td>
                                 </tr>
                                 <% end %>

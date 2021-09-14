@@ -13,6 +13,10 @@ defmodule PlanningPoker.Game.GameService do
     GameRepo.find(id)
   end
 
+  def delete(id) do
+    GameRepo.delete(id)
+  end
+
   def join(id, player) do
     game = GameRepo.find(id) |> Game.join(player)
     GameRepo.save(id, game)
