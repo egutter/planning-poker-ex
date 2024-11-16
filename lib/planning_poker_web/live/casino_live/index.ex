@@ -4,6 +4,7 @@ defmodule PlanningPokerWeb.CasinoLive.Index do
   alias Phoenix.PubSub
   alias PlanningPoker.Casino.CasinoService
   alias PlanningPoker.Casino.Casino
+  alias PlanningPoker.Game.Game
 
   @topic "casino_topic"
 
@@ -18,18 +19,34 @@ defmodule PlanningPokerWeb.CasinoLive.Index do
     {:ok,
      socket
      |> assign_all_games(casino)
-     |> assign_all_players(casino)}
+     |> assign_all_players(casino)
+     |> assign_game_changeset()}
   end
 
   @impl true
-  def handle_event("open_game", %{"game_name" => game_name}, socket) do
+  def handle_event("open_game", %{"game" => %{"name" => game_name}}, socket) do
     casino = CasinoService.start_game(game_name)
 
     PubSub.broadcast_from(PlanningPoker.PubSub, self(), @topic, {:games_changed})
 
     {:noreply,
      socket
-     |> assign_all_games(casino)}
+     |> assign_all_games(casino)
+     |> assign_game_changeset()}
+  end
+
+  def handle_event(
+        "validate_game",
+        %{"game" => game_params},
+        %{assigns: %{game: game}} = socket) do
+    changeset =
+      game
+      |> Game.changeset(game_params)
+      |> Map.put(:action, :validate)
+
+    {:noreply,
+      socket
+      |> assign(:changeset, changeset)}
   end
 
   @impl true
@@ -74,5 +91,11 @@ defmodule PlanningPokerWeb.CasinoLive.Index do
 
   defp assign_all_players(socket, casino) do
     assign(socket, players: casino.players)
+  end
+
+  defp assign_game_changeset(socket) do
+    socket
+    |> assign(:game, %Game{})
+    |> assign(:changeset, Game.changeset(%Game{}, %{}))
   end
 end

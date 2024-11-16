@@ -103,3 +103,12 @@ nav.navbar {
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
   filter: alpha(opacity=20);
 }
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.invalid-feedback {
+  width: 100%;
+  margin: 0rem !important;
+}

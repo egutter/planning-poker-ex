@@ -36,6 +36,13 @@ defmodule PlanningPoker.Casino.CasinoService do
     end
   end
 
+  def leave_player(player) do
+    CasinoRepo.save(fn casino ->
+      casino = Casino.remove_player(casino, player)
+      {casino, casino}
+    end)
+  end
+
   def joined?(player) do
     CasinoRepo.find() |> Casino.joined?(player)
   end

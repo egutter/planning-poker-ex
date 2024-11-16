@@ -88,16 +88,18 @@
                     </header>
                     <div class="card-content">
                         <div class="content">
-                            <form phx-submit="open_game" id="game-form">
-                                <div class="field has-addons">
+                            <%= f = form_for @changeset, "#",
+                              id: "game-form",
+                              phx_change: "validate_game",
+                              phx_submit: "open_game" %>
+                                <div class="field has-addons flex-wrap">
                                     <div class="control is-expanded">
-                                        <input type="text" name="game_name" class="input"
-                                               placeholder="Enter game name" autocomplete="off"/>
+                                        <%= text_input f, :name, class: "input", placeholder: "Enter game name", autocomplete: "off"  %>
                                     </div>
                                     <div class="control">
-                                        <button type="submit" phx-disable-with="Creating..." class="button is-link">Add Game
-                                        </button>
+                                        <%= submit "Add Game", phx_disable_with: "Creating...", class: "button is-link", disabled: !@changeset.valid? %>
                                     </div>
+                                    <%= error_tag f, :name %>
                                 </div>
                             </form>
                         </div>

@@ -18,6 +18,7 @@ defmodule PlanningPokerWeb.Router do
     pipe_through :browser
 
     post "/sign_in", UserController, :create
+    delete "/sign_out", UserController, :destroy
 
     live "/", CasinoLive.Index
     live "/login", LoginLive.Index

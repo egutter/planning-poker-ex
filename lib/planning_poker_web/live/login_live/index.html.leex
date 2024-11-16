@@ -42,7 +42,7 @@
                             <%= error_tag f, :email %>
                         </p>
                     </div>
-                    <%= submit "Join", phx_disable_with: "Joining...", class: 'button is-link' %>
+                    <%= submit "Join", phx_disable_with: "Joining...", class: 'button is-link', disabled: !@player.valid? %>
                     </form>
                 </div>
             </div>

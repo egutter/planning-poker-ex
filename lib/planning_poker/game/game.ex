@@ -1,11 +1,22 @@
 defmodule PlanningPoker.Game.Game do
   alias PlanningPoker.Game.Game
   alias PlanningPoker.PlanningSession.Story
+  import Ecto.Changeset
 
-  defstruct name: "", players: [], stories: []
+#  defstruct name: "", players: [], stories: []
+  defstruct [:name, :players, :stories]
+  @types %{name: :string, players: :list, stories: :list}
 
   def new(name) do
-    %Game{name: name}
+    %Game{name: name, players: [], stories: []}
+#    game = %Game{name: name, players: [], stories: []}
+#    changeset(game, %{name: name})
+  end
+
+  def changeset(%Game{} = game, attrs) do
+    {game, @types}
+    |> cast(attrs, Map.keys(@types))
+    |> validate_required([:name])
   end
 
   def join(game, player) do

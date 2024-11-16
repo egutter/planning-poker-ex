@@ -5,7 +5,8 @@ defmodule PlanningPoker.Game.GameService do
   alias PlanningPoker.PlanningSession.Estimate
 
   def new(name) do
-    game = Game.new(name)
+    #game = Game.new(name)
+    %Ecto.Changeset{valid?: true, data: game} = Game.changeset(Game.new(name), %{name: name})
     GameRepo.create(game)
   end
 

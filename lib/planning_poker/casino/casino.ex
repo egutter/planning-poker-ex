@@ -35,6 +35,10 @@ defmodule PlanningPoker.Casino.Casino do
     %{casino | players: MapSet.put(casino.players, player)}
   end
 
+  def remove_player(casino, player) do
+    %{casino | players: MapSet.delete(casino.players, player)}
+  end
+
   def joined?(casino, player) do
     casino.players |> member?(player)
   end
